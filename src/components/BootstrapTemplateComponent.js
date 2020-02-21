@@ -3,10 +3,6 @@ WebComponent.define('wc-bootstrap', class BootstrapTemplateComponent extends Web
         return ['lang', 'title'];
     }
 
-    connectedCallback() {
-        super.connectedCallback();
-    }
-
     // version reactive en changeant la valeur de l'attribut HTML
     customScript() {
         setTimeout(() => {

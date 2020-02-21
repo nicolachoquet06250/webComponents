@@ -65,9 +65,15 @@ class WebComponent extends HTMLElement {
     cast(value) {
         if(typeof value === "string") {
             if (value.match(/true|false/)) value = value === 'true';
-            else if (value.match(/[0-9]+/)) value = Number.parseInt(value);
-            else if (value.match(/[0-9\.]+/)) value = Number.parseFloat(value);
-            else if (value.match(/\[*\]+/) || value.match(/\{*\}+/)) value = JSON.parse(value);
+            else if (value.match(/[0-9]+$/g)) {
+                value = Number.parseInt(value);
+            }
+            else if (value.match(/[0-9\.]+$/g)) {
+                value = Number.parseFloat(value);
+            }
+            else if (value.match(/\[*\]+$/g) || value.match(/\{*\}+$/g)) {
+                value = JSON.parse(value);
+            }
         }
         return value;
     }
