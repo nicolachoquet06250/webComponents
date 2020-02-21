@@ -20,9 +20,6 @@ class WebComponent extends HTMLElement {
 
     connectedCallback() {
         this.render();
-        this.onLoaded();
-        this.render();
-        this.customScript();
     }
 
     onLoaded() {}
@@ -48,6 +45,7 @@ class WebComponent extends HTMLElement {
     }
 
     render() {
+        this.onLoaded();
         if(this.isFirstLoad) {
             if (this.getAttribute('firstHtmlContent') === '')
                 this.innerHTML = this.template;
@@ -56,6 +54,7 @@ class WebComponent extends HTMLElement {
         } else {
             this.innerHTML = this.getAttribute('firstHtmlContent') + this.template;
         }
+        this.customScript();
     }
 
     /**
@@ -64,7 +63,7 @@ class WebComponent extends HTMLElement {
      */
     cast(value) {
         if(typeof value === "string") {
-            if (value.match(/true|false/)) value = value === 'true';
+            if (value.match(/(true|false)$/g)) value = value === 'true';
             else if (value.match(/[0-9]+$/g)) {
                 value = Number.parseInt(value);
             }

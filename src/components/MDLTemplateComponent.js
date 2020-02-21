@@ -3,6 +3,7 @@ WebComponent.define('wc-mdl', class MDLTemplateComponent extends WebComponent {
         return ['title', 'theme', 'page'];
     }
 
+    // scripts
     onLoaded() {
         document.querySelector('head').innerHTML += `
 <meta charset="utf-8" />
@@ -11,11 +12,27 @@ WebComponent.define('wc-mdl', class MDLTemplateComponent extends WebComponent {
 <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
 <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css" />
 <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+<link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.${this.theme}.min.css" />
 `;
     }
 
     customScript() {
         setTimeout(() => this.page = 'titi', 5000);
+        this.initLinksEvents();
+    }
+
+    // for page content
+    get htmlMenu() {
+        let itemsId = [];
+        let id = 0;
+        let items = [];
+        for(let m of this.menu) {
+            items.push(`<a class="mdl-navigation__link ${m.active ? 'active' : ''} navigationLink${id}" ${m.click ? `click="${m.click}"` : ''} href="${m.href ? m.href : '#'}">${m.title}</a>`)
+            itemsId.push(`navigationLink${id}`);
+            id++;
+        }
+
+        return {html: items.join('\n'), ids: itemsId};
     }
 
     get template() {
@@ -23,7 +40,7 @@ WebComponent.define('wc-mdl', class MDLTemplateComponent extends WebComponent {
     <div class="mdl-layout__drawer">
         <span class="mdl-layout-title">${this.title}</span>
         <nav class="mdl-navigation">
-            ${this.menu.map(m => `<a class="mdl-navigation__link" href="${m.href}">${m.title}</a>`).join('\n')}
+            ${this.htmlMenu.html}
         </nav>
     </div>
     <main class="mdl-layout__content">
@@ -46,6 +63,7 @@ WebComponent.define('wc-mdl', class MDLTemplateComponent extends WebComponent {
         }
     }
 
+    // properties
     get title() {
         return this.getAttribute('title') || '';
     }
@@ -72,5 +90,22 @@ WebComponent.define('wc-mdl', class MDLTemplateComponent extends WebComponent {
     }
     set page(page) {
         this.synchronizePropAttr('page', page);
+    }
+
+    // for click on menu links
+    initLinksEvents() {
+        for(let id of this.htmlMenu.ids) {
+            for(let elem of document.querySelectorAll(`.${id}`)) {
+                elem.addEventListener('click', e => {
+                    let onclick = elem.getAttribute('click');
+                    this[onclick](e);
+                });
+            }
+        }
+    }
+
+    clickLink(e) {
+        e.preventDefault();
+        console.log(e);
     }
 });
