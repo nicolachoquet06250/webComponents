@@ -1,15 +1,17 @@
 class WebComponent extends HTMLElement {
     static get observedAttributes() {
-        return ['innerHTML'];
+        return [];
     }
 
-    get before_template() {
-        if(!this._bt && this.innerHTML)
-            this._bt = this.innerHTML;
-        if(!this._bt)
-            this._bt = '';
-        else this._bt += ' ';
-        return this._bt;
+    get isFirstLoad() {
+        if(this._isFirstLoad === undefined) {
+            this.setAttribute('firstHtmlContent', this.innerHTML + ' ');
+            this._isFirstLoad = true;
+        } else {
+            this.setAttribute('firstHtmlContent', this.getAttribute('firstHtmlContent'));
+            this._isFirstLoad = false;
+        }
+        return this._isFirstLoad;
     }
 
     get template() {
@@ -18,24 +20,37 @@ class WebComponent extends HTMLElement {
 
     connectedCallback() {
         this.render();
+        this.onLoaded();
+        this.render();
+        this.customScript();
     }
+
+    onLoaded() {}
+
+    customScript() {}
 
     disconnectedCallback() {}
 
     attributeChangedCallback(name, oldValue, newValue) {
         let changeListener = `on${name.substr(0, 1).toUpperCase()}${name.substr(1, name.length - 1).toLowerCase()}Change`;
-        if(name in this
-            && changeListener in this) {
-
-            this[changeListener](oldValue, newValue);
+        if(name in this) {
+            if(changeListener in this) {
+                this[changeListener](oldValue, newValue);
+            }
             this[`_${name}`] = newValue;
             this.render();
-
         }
     }
 
     render() {
-        this.innerHTML = this.template;
+        if(this.isFirstLoad) {
+            if (this.getAttribute('firstHtmlContent') === '')
+                this.innerHTML = this.template;
+            else
+                this.innerHTML = this.getAttribute('firstHtmlContent') + ' ' + this.template;
+        } else {
+            this.innerHTML = this.getAttribute('firstHtmlContent') + this.template;
+        }
     }
 
     static define(tag, tagClass) {
