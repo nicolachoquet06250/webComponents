@@ -7,6 +7,18 @@ WebComponent.define('wc-bootstrap', class BootstrapTemplateComponent extends Web
         super.connectedCallback();
     }
 
+    // version reactive en changeant la valeur de l'attribut HTML
+    customScript() {
+        setTimeout(() => {
+            let user = document.querySelector('#user');
+            user.setAttribute('lastname', 'Loubet');
+            user.setAttribute('test_bool', 'true');
+        }, 5000);
+        setTimeout(() => {
+            document.querySelector('#user').setAttribute('test_bool', 'false');
+        }, 10000);
+    }
+
     onLoaded() {
         document.querySelector('head').innerHTML += `
         <meta charset="utf-8" />
@@ -24,10 +36,6 @@ WebComponent.define('wc-bootstrap', class BootstrapTemplateComponent extends Web
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" 
                 integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" 
                 crossorigin="anonymous"></script>`;
-    }
-
-    customScript() {
-        setTimeout(() => document.querySelector('#user').setAttribute('lastname', 'Loubet'), 5000);
     }
 
     get template() {
@@ -48,16 +56,16 @@ WebComponent.define('wc-bootstrap', class BootstrapTemplateComponent extends Web
     }
 
     get lang() {
-        return this._lang || 'en';
+        return this.getAttribute('lang') || 'en';
     }
     set lang(lang) {
-        this._lang = lang;
+        this.synchronizePropAttr('lang', lang);
     }
 
     get title() {
-        return this._title || '';
+        return this.getAttribute('title') || '';
     }
     set title(title) {
-        this._title = title;
+        this.synchronizePropAttr('title', title);
     }
 });

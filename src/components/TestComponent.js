@@ -4,10 +4,10 @@ WebComponent.define('wc-test', class TestComponent extends WebComponent {
     }
 
     get text() {
-        return this._text || '';
+        return this.getAttribute('text') || '';
     }
     set text(text) {
-        this._text = text;
+        this.synchronizePropAttr('text', text);
     }
 
     get template() {
